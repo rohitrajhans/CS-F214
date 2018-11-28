@@ -2,18 +2,21 @@ not_empty(L) :-
     length(L, K),
     K>0.
 
-isAdapterValid(X) :-
-    char_code(X, Code),
-    Code =< 72,
-    Code >= 65.
-
 allow() :-
     write('Packet is rejected'),
     false.
 
-allow(L) :-
+allow(L, M) :-
     adapter_validation(L),
+    ethernet_validation(M),
     format('Packet with adapter ~w is allowed', [L]).
+
+/* Adapter Clauses */
+
+isAdapterValid(X) :-
+    char_code(X, Code),
+    Code =< 72,
+    Code >= 65.
 
 adapter_validation([]) :-
     true.
@@ -29,3 +32,5 @@ adapter_validation([H|T]) :-
     Code >= 65,
     Code =< 91.
 */
+
+/* Ethernet Clauses */

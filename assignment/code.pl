@@ -2,26 +2,32 @@ packet(X, Y) :-
     is_packet_accepted(X, Y),
     write('Packet accepted').
 
+
+/* is_packet_accepted() is a wrapper predicate to pass the same clauses to adapter and ethernet predicates */
 is_packet_accepted(X,Y) :-
     allow(L, M),
     validate_adapter(X,L),
     validate_ethernet(Y,M).
 
+/* Should convert empty adapter to Z but not working */
 validate_adapter('', L) :-
     validate_adapter('Z', L).
 
+/* Checks for A-C, range of adapters */
 validate_adapter(X, L) :-
     split_string(L, "-", "", T),
     length(T, I),
     I=2,
     memberOfRange(X,T).
-    
+
+/* Checks for A,B,C continuation of adapters */    
 validate_adapter(X, L) :-
     split_string(L, ",", "", T),
     length(T, I),
     I >= 2,
     memberOfList(X, T).
 
+/* Checks for a single adapter */
 validate_adapter(X, L) :-
     string_length(L, I),
     I=1,
@@ -29,6 +35,7 @@ validate_adapter(X, L) :-
     char_code(L, PC),
     XC=PC.
 
+/* Similarly for ethernet clause */
 validate_ethernet([V|[P|_]], L) :-
     validate_vid(V, L),
     validate_proto(P, L).

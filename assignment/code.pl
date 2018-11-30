@@ -1,39 +1,17 @@
 :- consult(db).
 
 
+%% sample input - packet('adapter A, ether vid 2 proto 30, ip src 192.168.1.0 dest 192.168.1.0, tcp src 12 dest 23, icmp type 20 code 30').
 %% complete all the following, i'm done
 %% YET TO BE DONE: 1.Implement any
 %% 2. documentation
 %% 3. fill up db, and arrange and name code properly (efficient code, consistent naming and spacing)
-%% 4. ipv4 yet to be done
 
-% packet(I) :-
-%     split_string(I, ",", "", [A|[B|[C|[D|[E|_]]]]]),
-%     split_string(A, " ", "\s\t\n", [_|[P]]),
-%     split_string(B, " ", "\s\t\n", [_|[_|[Q|[_|[R|_]]]]]),
-%     split_string(C, " ", "\s\t\n", [_|[_|[S|[_|[T|_]]]]]),
-%     split_string(D, " ", "\s\t\n", [U|[_|[V|[_|[W|_]]]]]),
-%     split_string(E, " ", "\s\t\n", [_|[_|[X|[_|[Y|_]]]]]),
-%     atom_number(Q,QN),
-%     atom_number(R,RN),
-%     atom_number(V,VN),
-%     atom_number(W,WN),
-%     atom_number(X,XN),
-%     atom_number(Y,YN),
-%     atom_string(S,SA),
-%     atom_string(T, TA),  
-%     atom_string(UA, U),
-%     check_packet(P, [QN|[RN]], [SA|[TA]], [U|[VN|[WN]]] ,[XN|[YN]]).
-
-
-%% AFTER COMPLETION OF IP UNCOMMENT ABOVE PACKET, DELETE BELOW
-
-%% sample input - 'adapter A, ether vid 2 proto 30, ip src 192.168.1.0, tcp src 12 dest 23, icmp type 20 code 30'
 packet(I) :-
     split_string(I, ",", "", [A|[B|[C|[D|[E|_]]]]]),
     split_string(A, " ", "\s\t\n", [_|[P]]),
     split_string(B, " ", "\s\t\n", [_|[_|[Q|[_|[R|_]]]]]),
-    split_string(C, " ", "\s\t\n", [_|[_|[S|_]]]),
+    split_string(C, " ", "\s\t\n", [_|[_|[S|[_|[T|_]]]]]),
     split_string(D, " ", "\s\t\n", [U|[_|[V|[_|[W|_]]]]]),
     split_string(E, " ", "\s\t\n", [_|[_|[X|[_|[Y|_]]]]]),
     atom_number(Q,QN),
@@ -43,8 +21,9 @@ packet(I) :-
     atom_number(X,XN),
     atom_number(Y,YN),
     atom_string(S,SA),
+    atom_string(T, TA),  
     atom_string(UA, U),
-    check_packet(P, [QN|[RN]], SA, [UA|[VN|[WN]]] ,[XN|[YN]]).
+    check_packet(P, [QN|[RN]], [SA|[TA]], [UA|[VN|[WN]]] ,[XN|[YN]]).
 
 check_packet(X,Y,Z,W,U) :-
     is_packet_accepted(X,Y,Z,W,U),
@@ -139,15 +118,19 @@ validate_code(C,[_|[I|_]]) :-
 validate_code(C,[_|[I|_]]) :-
     verify_number(C,I).
 
-validate_ip(Z,N) :-
+validate_ip([S|[D|_]], [VS|[VD|_]]) :-
+    verify_ip_add(S,VS),
+    verify_ip_add(D,VD).
+
+verify_ip_add(Z,N) :-
     \+sub_string(N, _, _, _, ','),
     \+sub_string(N, _, _, _, '-'),
     Z=N.
-validate_ip(Z,N) :-
+verify_ip_add(Z,N) :-
     sub_string(N, _, _, _, ','),
     split_string(N, ",", "", T),
     memberIPList(Z,T).
-validate_ip(Z,N) :-
+verify_ip_add(Z,N) :-
     sub_string(N, _, _, _, '-'),
     split_string(N, "-", "", T),
     memberIPRange(Z, T).

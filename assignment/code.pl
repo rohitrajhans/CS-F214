@@ -1,114 +1,147 @@
 :- consult(db).
 
-packet(X, Y, Z) :-
-    is_packet_accepted(X, Y, Z),
+%% YET TO BE DONE: 1.Implement any
+%% 2. Convert input to string
+%% 3. documentation
+%% 4. fill up db, and arrange and name code properly (efficient code, consistent naming and spacing)
+%% 5. ipv4 yet to be done
+
+packet(X,Y,Z,W,U) :-
+    is_packet_accepted(X,Y,Z,W,U),
     write('Packet accepted').
 
-packet(X,Y,Z) :-
-    is_packet_dropped(X,Y,Z).
+packet(X,Y,Z,W,U) :-
+    is_packet_dropped(X,Y,Z,W,U).
 
-packet(X,Y,Z) :-
-    is_packet_rejected(X,Y,Z),
+packet(X,Y,Z,W,U) :-
+    is_packet_rejected(X,Y,Z,W,U),
     write('Packet rejected').
 
-/* is_packet_accepted() is a wrapper predicate to pass the same clauses to adapter and ethernet predicates */
-is_packet_accepted(X, Y, Z) :-
-    allow(L, M, N),
-    validate_adapter(X, L),
-    validate_ethernet(Y, M),
-    validate_ip(Z, N).
+is_packet_accepted(X,Y,Z,W,U) :-
+    allow(L,M,N,O,P),
+    validate_adapter(X,L),
+    validate_ethernet(Y,M),
+    validate_ip(Z,N),
+    validate_tcp_udp(W,O),
+    validate_icmp(U,P).
 
-is_packet_dropped(X, Y, Z) :-
-    drop(L, M, N),
-    validate_adapter(X, L),
-    validate_ethernet(Y, M),
-    validate_ip(Z, N).
+is_packet_dropped(X,Y,Z,W,U) :-
+    drop(L,M,N,O,P),
+    validate_adapter(X,L),
+    validate_ethernet(Y,M),
+    validate_ip(Z,N),
+    validate_tcp_udp(W,O),
+    validate_icmp(U,P).
 
-is_packet_rejected(X, Y, Z) :-
-    reject(L, M, N),
-    validate_adapter(X, L),
-    validate_ethernet(Y, M),
-    validate_ip(Z, N).
+is_packet_rejected(X,Y,Z,W,U) :-
+    reject(L,M,N,O,P),
+    validate_adapter(X,L),
+    validate_ethernet(Y,M),
+    validate_ip(Z,N),
+    validate_tcp_udp(W,O),
+    validate_icmp(U,P).
 
-/* Should convert empty adapter to Z but not working */
-validate_adapter(X, L) :-
+validate_adapter(X,L) :-
     X='',
-    validate_adapter('Z', L).
-
-/* Checks for A-C, range of adapters */
-validate_adapter(X, L) :-
+    validate_adapter('Z',L).
+validate_adapter(X,L) :-
     \+X='',
-    sub_string(L, _, _, _, '-'),
-    split_string(L, "-", "", T),
+    sub_string(L,_,_,_,'-'),
+    split_string(L,"-","",T),
     memberOfRange(X,T).
-
-/* Checks for A,B,C continuation of adapters */    
-validate_adapter(X, L) :-
+validate_adapter(X,L) :-
     \+X='',
-    sub_string(L, _, _, _, ','),
-    split_string(L, ",", "", T),
-    memberOfList(X, T).
-
-/* Checks for a single adapter */
-validate_adapter(X, L) :-
+    sub_string(L,_,_,_,','),
+    split_string(L,",","",T),
+    memberOfList(X,T).
+validate_adapter(X,L) :-
     \+X='',
-    \+sub_string(L, _, _, _, '-'),
-    \+sub_string(L, _, _, _, ','),
-    char_code(X, XC),
-    char_code(L, PC),
+    \+sub_string(L,_,_,_,'-'),
+    \+sub_string(L,_,_,_,','),
+    char_code(X,XC),
+    char_code(L,PC),
     XC=PC.
 
 /* Similarly for ethernet clause */
-validate_ethernet([V|[P|_]], L) :-
-    validate_vid(V, L),
-    validate_proto(P, L).
+validate_ethernet([V|[P|_]],M) :-
+    validate_vid(V,M),
+    validate_proto(P,M).
 
-validate_vid(X, [E|_]) :-
-    sub_string(E, _, _, _, '-'),
-    split_string(E, "-", "", T),
-    memberOfNumberRange(X,T).
+validate_vid(Y,[E|_]) :-
+    verify_number_range(Y,E).
+validate_vid(Y,[E|_]) :-
+    verify_number_list(Y,E).
+validate_vid(Y,[E|_]) :-
+    verify_number(Y,E).
 
-validate_vid(X, [E|_]) :-
-    sub_string(E, _, _, _, ','),
-    split_string(E, ",", "", T),
-    memberOfNumberList(X, T).
+validate_proto(Y,[_|[E|_]]) :-
+    verify_number_range(Y,E).
+validate_proto(Y,[_|[E|_]]) :-
+    verify_number_list(Y,E).
+validate_proto(Y,[_|[E|_]]) :-
+    verify_number(Y,E).
 
-validate_vid(X, [E|_]) :-
-    \+sub_string(E, _, _, _, ','),
-    \+sub_string(E, _, _, _, ','),
-    atom_number(E, EN),
-    X=EN.
+validate_icmp([T|[C|_]],P) :-
+    validate_type(T,P),
+    validate_code(C,P).
 
-validate_proto(X, [_|[E|_]]) :-
-    sub_string(E, _, _, _, '-'),
-    split_string(E, "-", "", T),
-    memberOfNumberRange(X,T).
+validate_type(T,[I|_]) :-
+    verify_number_range(T,I).
+validate_type(T,[I|_]) :-
+    verify_number_list(T,I).
+validate_type(T,[I|_]) :-
+    verify_number(T,I).
 
-validate_proto(X, [_|[E|_]]) :-
-    sub_string(E, _, _, _, ','),
-    split_string(E, ",", "", T),
-    memberOfNumberList(X, T).
+validate_code(C,[_|[I|_]]) :-
+    verify_number_range(C,I).
+validate_code(C,[_|[I|_]]) :-
+    verify_number_list(C,I).
+validate_code(C,[_|[I|_]]) :-
+    verify_number(C,I).
 
-validate_proto(X, [_|[E|_]]) :-
-    \+sub_string(E, _, _, _, '-'),
-    \+sub_string(E, _, _, _, ','),
-    atom_number(E, EN),
-    X=EN.
+validate_ip(Z,N) :-
+    \+sub_string(N, _, _, _, ','),
+    \+sub_string(N, _, _, _, '-'),
+    Z=N.
+validate_ip(Z,N) :-
+    sub_string(N, _, _, _, ','),
+    split_string(N, ",", "", T),
+    memberIPList(Z,T).
+validate_ip(Z,N) :-
+    sub_string(N, _, _, _, '-'),
+    split_string(N, "-", "", T),
+    memberIPRange(Z, T).
 
-validate_ip(X, L) :-
-    \+sub_string(L, _, _, _, ','),
-    \+sub_string(L, _, _, _, '-'),
-    X=L.
+validate_tcp_udp([W|[S|[D|_]]], [H|[VS|[VD|_]]]) :-
+    W=H,
+    verify_ports(S,VS),
+    verify_ports(D,VD).
 
-validate_ip(X, L) :-
-    sub_string(L, _, _, _, ','),
-    split_string(L, ",", "", T),
-    memberIPList(X, T).
+verify_ports(A, B) :-
+    A=<65535,
+    verify_number_range(A,B).
+verify_ports(A, B) :-
+    A=<65535,
+    verify_number_list(A,B).
+verify_ports(A,B) :-
+    A=<65535,
+    verify_number(A,B).
 
-validate_ip(X, L) :-
-    sub_string(L, _, _, _, '-'),
-    split_string(L, "-", "", T),
-    memberIPRange(X, T).
+verify_number_range(A, B) :-
+    sub_string(B, _, _, _, '-'),
+    split_string(B, "-", "", T),
+    memberOfNumberRange(A,T).
+
+verify_number_list(A,B) :-
+    sub_string(B, _, _, _, ','),
+    split_string(B, ",", "", T),
+    memberOfNumberList(A,T).
+
+verify_number(A,B) :-
+    \+sub_string(B, _, _, _, '-'),
+    \+sub_string(B, _, _, _, ','),
+    atom_number(B, BN),
+    A=BN.
 
 memberIPList(_, []) :-
     false.

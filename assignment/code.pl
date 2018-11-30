@@ -1,13 +1,14 @@
-packet(X, Y) :-
-    is_packet_accepted(X, Y),
+packet(X, Y, Z) :-
+    is_packet_accepted(X, Y, Z),
     write('Packet accepted').
 
 
 /* is_packet_accepted() is a wrapper predicate to pass the same clauses to adapter and ethernet predicates */
-is_packet_accepted(X,Y) :-
-    allow(L, M),
-    validate_adapter(X,L),
-    validate_ethernet(Y,M).
+is_packet_accepted(X, Y, Z) :-
+    allow(L, M, N),
+    validate_adapter(X, L),
+    validate_ethernet(Y, M),
+    validate_ip(Z, N).
 
 /* Should convert empty adapter to Z but not working */
 validate_adapter('', L) :-
@@ -76,6 +77,55 @@ validate_proto(X, [_|[E|_]]) :-
     atom_number(E, EN),
     X=EN.
 
+validate_ip('', L) :-
+    validate_ip('Z', L).
+
+validate_ip(X, L) :-
+    \+sub_string(L, _, _, _, ','),
+    \+sub_string(L, _, _, _, '-'),
+    X=L.
+
+validate_ip(X, L) :-
+    sub_string(L, _, _, _, ','),
+    \+sub_string(L, _, _, _, '-'),
+    split_string(L, ",", "", T),
+    length(T, I),
+    I>=2,
+    memberIPList(X, T).
+
+validate_ip(X, L) :-
+    sub_string(L, _, _, _, '-'),
+    \+sub_string(L, _, _, _, ','),
+    split_string(L, "-", "", T),
+    length(T, I),
+    I=2,
+    memberIPRange(X, T).
+
+memberIPList(_, []) :-
+    false.
+
+memberIPList(X, [H|T]) :-
+    split_string(H, ".", "", SH),
+    split_string(X, ".", "", SX),
+    SH = SX;
+    memberIPList(X, T).
+
+memberIPRange(X, [S, E]) :-
+    split_string(X, ".", "", SX),
+    split_string(S, ".", "", SS),
+    split_string(E, ".", "", SE),
+    compare_range(SX, SS, SE).
+
+compare_range([], [], []) :-
+    true.
+
+compare_range([XH|XT], [SH|ST], [EH|ET]) :-
+    atom_number(XH, IXH),
+    atom_number(SH, ISH),
+    atom_number(EH, IEH),
+    between(ISH, IEH, IXH),
+    compare_range(XT, ST, ET).
+
 memberOfList(_, []) :-
     false.
 
@@ -113,3 +163,4 @@ checkValidNumber([H|T]) :-
     between(48,57, H),
     checkValidNumber(T);
     false.
+

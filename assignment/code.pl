@@ -2,10 +2,28 @@ packet(X, Y, Z) :-
     is_packet_accepted(X, Y, Z),
     write('Packet accepted').
 
+packet(X,Y,Z) :-
+    is_packet_dropped(X,Y,Z).
+
+packet(X,Y,Z) :-
+    is_packet_rejected(X,Y,Z),
+    write('Packet rejected').
 
 /* is_packet_accepted() is a wrapper predicate to pass the same clauses to adapter and ethernet predicates */
 is_packet_accepted(X, Y, Z) :-
     allow(L, M, N),
+    validate_adapter(X, L),
+    validate_ethernet(Y, M),
+    validate_ip(Z, N).
+
+is_packet_dropped(X, Y, Z) :-
+    drop(L, M, N),
+    validate_adapter(X, L),
+    validate_ethernet(Y, M),
+    validate_ip(Z, N).
+
+is_packet_rejected(X, Y, Z) :-
+    reject(L, M, N),
     validate_adapter(X, L),
     validate_ethernet(Y, M),
     validate_ip(Z, N).
@@ -139,8 +157,7 @@ memberOfRange(X, [S|[E|_]]) :-
     char_code(S, SC),
     char_code(E, EC),
     char_code(X, XC),
-    XC >= SC,
-    XC =< EC.
+    between(SC,EC,XC).
 
 memberOfNumberRange(X, [S|[E|_]]) :-
     atom_number(S, SN),
@@ -163,4 +180,3 @@ checkValidNumber([H|T]) :-
     between(48,57, H),
     checkValidNumber(T);
     false.
-

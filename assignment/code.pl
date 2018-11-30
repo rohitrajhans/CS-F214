@@ -1,3 +1,5 @@
+:- consult(db).
+
 packet(X, Y, Z) :-
     is_packet_accepted(X, Y, Z),
     write('Packet accepted').
@@ -29,27 +31,29 @@ is_packet_rejected(X, Y, Z) :-
     validate_ip(Z, N).
 
 /* Should convert empty adapter to Z but not working */
-validate_adapter('', L) :-
+validate_adapter(X, L) :-
+    X='',
     validate_adapter('Z', L).
 
 /* Checks for A-C, range of adapters */
 validate_adapter(X, L) :-
+    \+X='',
+    sub_string(L, _, _, _, '-'),
     split_string(L, "-", "", T),
-    length(T, I),
-    I=2,
     memberOfRange(X,T).
 
 /* Checks for A,B,C continuation of adapters */    
 validate_adapter(X, L) :-
+    \+X='',
+    sub_string(L, _, _, _, ','),
     split_string(L, ",", "", T),
-    length(T, I),
-    I >= 2,
     memberOfList(X, T).
 
 /* Checks for a single adapter */
 validate_adapter(X, L) :-
-    string_length(L, I),
-    I=1,
+    \+X='',
+    \+sub_string(L, _, _, _, '-'),
+    \+sub_string(L, _, _, _, ','),
     char_code(X, XC),
     char_code(L, PC),
     XC=PC.
@@ -60,43 +64,36 @@ validate_ethernet([V|[P|_]], L) :-
     validate_proto(P, L).
 
 validate_vid(X, [E|_]) :-
+    sub_string(E, _, _, _, '-'),
     split_string(E, "-", "", T),
-    length(T, I),
-    I=2,
     memberOfNumberRange(X,T).
 
 validate_vid(X, [E|_]) :-
+    sub_string(E, _, _, _, ','),
     split_string(E, ",", "", T),
-    length(T, I),
-    I >= 2,
     memberOfNumberList(X, T).
 
 validate_vid(X, [E|_]) :-
-    string_to_list(E, S),
-    checkValidNumber(S),
+    \+sub_string(E, _, _, _, ','),
+    \+sub_string(E, _, _, _, ','),
     atom_number(E, EN),
     X=EN.
 
 validate_proto(X, [_|[E|_]]) :-
+    sub_string(E, _, _, _, '-'),
     split_string(E, "-", "", T),
-    length(T, I),
-    I=2,
     memberOfNumberRange(X,T).
 
 validate_proto(X, [_|[E|_]]) :-
+    sub_string(E, _, _, _, ','),
     split_string(E, ",", "", T),
-    length(T, I),
-    I >= 2,
     memberOfNumberList(X, T).
 
 validate_proto(X, [_|[E|_]]) :-
-    string_to_list(E, S),
-    checkValidNumber(S),
+    \+sub_string(E, _, _, _, '-'),
+    \+sub_string(E, _, _, _, ','),
     atom_number(E, EN),
     X=EN.
-
-validate_ip('', L) :-
-    validate_ip('Z', L).
 
 validate_ip(X, L) :-
     \+sub_string(L, _, _, _, ','),
@@ -105,18 +102,12 @@ validate_ip(X, L) :-
 
 validate_ip(X, L) :-
     sub_string(L, _, _, _, ','),
-    \+sub_string(L, _, _, _, '-'),
     split_string(L, ",", "", T),
-    length(T, I),
-    I>=2,
     memberIPList(X, T).
 
 validate_ip(X, L) :-
     sub_string(L, _, _, _, '-'),
-    \+sub_string(L, _, _, _, ','),
     split_string(L, "-", "", T),
-    length(T, I),
-    I=2,
     memberIPRange(X, T).
 
 memberIPList(_, []) :-
@@ -172,11 +163,3 @@ memberOfNumberList(X, [H|T]) :-
     atom_number(H, HE),
     X = HE;
     memberOfNumberList(X, T).
-
-checkValidNumber([]) :-
-    true.
-
-checkValidNumber([H|T]) :-
-    between(48,57, H),
-    checkValidNumber(T);
-    false.

@@ -1,19 +1,59 @@
 :- consult(db).
 
-%% YET TO BE DONE: 1.Implement any
-%% 2. Convert input to string
-%% 3. documentation
-%% 4. fill up db, and arrange and name code properly (efficient code, consistent naming and spacing)
-%% 5. ipv4 yet to be done
 
-packet(X,Y,Z,W,U) :-
+%% complete all the following, i'm done
+%% YET TO BE DONE: 1.Implement any
+%% 2. documentation
+%% 3. fill up db, and arrange and name code properly (efficient code, consistent naming and spacing)
+%% 4. ipv4 yet to be done
+
+% packet(I) :-
+%     split_string(I, ",", "", [A|[B|[C|[D|[E|_]]]]]),
+%     split_string(A, " ", "\s\t\n", [_|[P]]),
+%     split_string(B, " ", "\s\t\n", [_|[_|[Q|[_|[R|_]]]]]),
+%     split_string(C, " ", "\s\t\n", [_|[_|[S|[_|[T|_]]]]]),
+%     split_string(D, " ", "\s\t\n", [U|[_|[V|[_|[W|_]]]]]),
+%     split_string(E, " ", "\s\t\n", [_|[_|[X|[_|[Y|_]]]]]),
+%     atom_number(Q,QN),
+%     atom_number(R,RN),
+%     atom_number(V,VN),
+%     atom_number(W,WN),
+%     atom_number(X,XN),
+%     atom_number(Y,YN),
+%     atom_string(S,SA),
+%     atom_string(T, TA),  
+%     atom_string(UA, U),
+%     check_packet(P, [QN|[RN]], [SA|[TA]], [U|[VN|[WN]]] ,[XN|[YN]]).
+
+
+%% AFTER COMPLETION OF IP UNCOMMENT ABOVE PACKET, DELETE BELOW
+
+%% sample input - 'adapter A, ether vid 2 proto 30, ip src 192.168.1.0, tcp src 12 dest 23, icmp type 20 code 30'
+packet(I) :-
+    split_string(I, ",", "", [A|[B|[C|[D|[E|_]]]]]),
+    split_string(A, " ", "\s\t\n", [_|[P]]),
+    split_string(B, " ", "\s\t\n", [_|[_|[Q|[_|[R|_]]]]]),
+    split_string(C, " ", "\s\t\n", [_|[_|[S|_]]]),
+    split_string(D, " ", "\s\t\n", [U|[_|[V|[_|[W|_]]]]]),
+    split_string(E, " ", "\s\t\n", [_|[_|[X|[_|[Y|_]]]]]),
+    atom_number(Q,QN),
+    atom_number(R,RN),
+    atom_number(V,VN),
+    atom_number(W,WN),
+    atom_number(X,XN),
+    atom_number(Y,YN),
+    atom_string(S,SA),
+    atom_string(UA, U),
+    check_packet(P, [QN|[RN]], SA, [UA|[VN|[WN]]] ,[XN|[YN]]).
+
+check_packet(X,Y,Z,W,U) :-
     is_packet_accepted(X,Y,Z,W,U),
     write('Packet accepted').
 
-packet(X,Y,Z,W,U) :-
+check_packet(X,Y,Z,W,U) :-
     is_packet_dropped(X,Y,Z,W,U).
 
-packet(X,Y,Z,W,U) :-
+check_packet(X,Y,Z,W,U) :-
     is_packet_rejected(X,Y,Z,W,U),
     write('Packet rejected').
 

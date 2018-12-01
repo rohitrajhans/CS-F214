@@ -13,4 +13,4 @@ Authors
 
 Input Constraints
 
-Sample Input - packet('adapter A, ether vid 2 proto 30, ip src 192.168.1.0 dest 192.168.1.0, tcp src 12 dest 23, icmp type 20 code 30').
+Sample Input - packet('adapter A, ether vid 2 proto 256, ip src 192.168.1.0 dest 192.168.2.2, tcp src 0 dest 1500, icmp type 10 code 5').

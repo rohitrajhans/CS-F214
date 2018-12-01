@@ -1,1 +1,5 @@
-packet('A', [2,30]).
+packet('adapter A, ether vid 2 proto 256, ip src 192.168.1.0 dest 192.168.2.2, tcp src 0 dest 1500, icmp type 10 code 5').
+packet('adapter G, ether vid 6 proto 256, ip src 192.168.1.0/2 dest 192.168.1.7, udp src 12 dest 23, icmp type 20 code 10').
+packet('adapter Z, ether vid 50 proto 30, ip src 192.168.2.0 dest 192.168.1.7, tcp src 200 dest 40, icmp type 1 code 12').
+packet('adapter I, ether vid 50 proto 30, ip src 192.168.2.6 dest 192.168.1.0/12, udp src 100 dest 10000, icmp type 20 code 5').
+packet('adapter A, ether vid 20 proto 7, ip src 192.168.2.5 dest 192.168.1.0, tcp src 1 dest 1, icmp type 2 code 4').

@@ -8,7 +8,7 @@
 % Authors:
 % 2016A7PS0105P - Rohit Rajhans
 % 2016A7PS0127P - Siddhant Khandelwal
-% Sample Input - packet('adapter A, ether vid 2 proto 30, ip src 192.168.1.0 dest 192.168.1.0, tcp src 12 dest 23, icmp type 20 code 30').
+% Sample Input - packet('adapter A, ether vid 2 proto 30, ip src 192.168.1.0 dest 192.168.1.7, tcp src 12 dest 23, icmp type 20 code 30').
 
 % [Prolog Program]
 % Importing Databse stored as 'db.pl' in cwd
@@ -190,6 +190,8 @@ verify_proto(Y,[_|[E|_]]) :-
 % Recieves the icmp type and code
 % Passes the attributes to respective predicates - verify_type/2, verify_code/2
 verify_icmp([T|[C|_]],P) :-
+    T=<30,
+    C=<15,
     verify_type(T,P),
     verify_code(C,P).
 
@@ -259,9 +261,11 @@ verify_ip_add(Z,N) :-
     sub_string(N, _, _, _, '/'),
     \+sub_string(N, _, _, _, ','),
     \+sub_string(N, _, _, _, '-'),
-    split_string(N, '/', '', [_|T]),
-    T >= 1,
-    T =< 32,
+    split_string(N, '/', '', [_|[T|_]]),
+    atom_string(TA,T),
+    atom_number(TA, TN),
+    TN >= 1,
+    TN =< 32,
     Z=N.
 
 % verify_ip_add/2
@@ -285,6 +289,11 @@ verify_ip_add(Z,N) :-
 % verify_tcp_udp/2
 % Checks for tcp attributes
 % Verfies ports for Source and Destination tcp - verify_ports/2
+verify_tcp_udp([_|[S|[D|_]]], [H|[VS|[VD|_]]]) :-
+    H="any",
+    verify_ports(S,VS),
+    verify_ports(D,VD).
+
 verify_tcp_udp([W|[S|[D|_]]], [H|[VS|[VD|_]]]) :-
     W=H,
     verify_ports(S,VS),

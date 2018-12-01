@@ -68,20 +68,20 @@ is_packet_rejected(X,Y,Z,W,U) :-
     validate_icmp(U,P).
 
 validate_adapter(X,L) :-
-    X='any',
+    X="any",
     validate_adapter('Z',L).
 validate_adapter(X,L) :-
-    \+X='any',
+    \+X="any",
     sub_string(L,_,_,_,'-'),
     split_string(L,"-","",T),
     memberOfRange(X,T).
 validate_adapter(X,L) :-
-    \+X='any',
+    \+X="any",
     sub_string(L,_,_,_,','),
     split_string(L,",","",T),
     memberOfList(X,T).
 validate_adapter(X,L) :-
-    \+X='any',
+    \+X="any",
     \+sub_string(L,_,_,_,'-'),
     \+sub_string(L,_,_,_,','),
     char_code(X,XC),

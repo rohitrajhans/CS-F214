@@ -13,7 +13,6 @@
 % TODO
 % 1. Implement any
 % 2. documentation
-% 3. add n.n.n.n/<prefix>
 
 % [Prolog Program]
 % Importing Databse stored as 'db.pl' in cwd
@@ -25,7 +24,6 @@
 % Base Predicate 
 % Accepts packet and associated data
 % Splits the arguements and passes on to check_packet/2
-
 packet(I) :-
     split_string(I, ",", "", [A|[B|[C|[D|[E|_]]]]]),
     split_string(A, " ", "\s\t\n", [_|[P]]),
@@ -112,16 +110,13 @@ is_packet_rejected(X,Y,Z,W,U) :-
 % [[[Packet Adapter Verification]]]
 % verify_adapter/2
 % Handles the 'any' Adapter case.
-% Substitutes 'Z' for the 'any' string passed in the packet.
-% Handled as 'Z' internally.
-verify_adapter(X,L) :-
-    X="any",
-    verify_adapter('Z',L).
+verify_adapter(_,L) :-
+    L="any".
 
 % verify_adapter/2
 % Handles the range case in firewall rule for IP Address, e.g. 192.168.1.1-192.168.2.1
 verify_adapter(X,L) :-
-    \+X="any",
+    \+L="any",
     sub_string(L,_,_,_,'-'),
     split_string(L,"-","",T),
     memberOfRange(X,T).
@@ -129,7 +124,7 @@ verify_adapter(X,L) :-
 % verify_adapter/2
 % Handles the comma-seprerated list case in firewall rule for IP Address, e.g. [192.168.1.1, 192.168.2.1, 192.168.2.3]
 verify_adapter(X,L) :-
-    \+X="any",
+    \+L="any",
     sub_string(L,_,_,_,','),
     split_string(L,",","",T),
     memberOfList(X,T).
@@ -137,7 +132,7 @@ verify_adapter(X,L) :-
 % verify_adapter/2
 % Handles the single IP Address case firewall rule, e.g. 192.168.1.1
 verify_adapter(X,L) :-
-    \+X="any",
+    \+L="any",
     \+sub_string(L,_,_,_,'-'),
     \+sub_string(L,_,_,_,','),
     char_code(X,XC),
@@ -155,6 +150,10 @@ verify_ethernet([V|[P|_]],M) :-
     verify_proto(P,M).
 
 % verify_vid/2
+% verifies vid for 'any' case
+verify_vid(_, [E|_]) :-
+    E = "any".
+
 % verifies number range for vid
 verify_vid(Y,[E|_]) :-
     verify_number_range(Y,E).
@@ -170,6 +169,10 @@ verify_vid(Y,[E|_]) :-
     verify_number(Y,E).
 
 % verify_proto/2
+% verifies 'any' case for proto
+verify_proto(_,[_|[E|_]]) :-
+    E = "any".
+
 % verifies number range for proto
 verify_proto(Y,[_|[E|_]]) :-
     verify_number_range(Y,E).
@@ -195,6 +198,10 @@ verify_icmp([T|[C|_]],P) :-
     verify_code(C,P).
 
 % verify_type/2
+% verifies 'any' case for type
+verify_type(_,[I|_]) :-
+    I = "any".
+
 % verifies number range for icmp type
 verify_type(T,[I|_]) :-
     verify_number_range(T,I).
@@ -210,6 +217,10 @@ verify_type(T,[I|_]) :-
     verify_number(T,I).
 
 % verify_code/2
+% verifies 'any' case for type
+verify_code(I,[_|[I|_]]) :-
+    I = "any".
+
 % verifies number range for icmp code
 verify_code(C,[_|[I|_]]) :-
     verify_number_range(C,I).
@@ -234,6 +245,10 @@ verify_ip([S|[D|_]], [VS|[VD|_]]) :-
     verify_ip_add(D,VD).
 
 % verify_ip_add/2
+% verifies 'any' case for IP Address
+verify_ip_add(_,N) :-
+    N = "any".
+
 % Checks for type of arguement passed by rule in database
 % verifies single ip address
 verify_ip_add(Z,N) :-
@@ -280,6 +295,10 @@ verify_tcp_udp([W|[S|[D|_]]], [H|[VS|[VD|_]]]) :-
     verify_ports(D,VD).
 
 % verify_ports/2
+% verfies 'any' case for ports
+verify_ports(_, B) :-
+    B = "any".
+
 % verifies port in number range
 verify_ports(A, B) :-
     A=<65535,

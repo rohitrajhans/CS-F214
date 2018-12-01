@@ -6,8 +6,8 @@
 %   ii) Write a Prolog program to apply encoded rules on any incoming packet. Note that multiple rules may apply.
 
 % Authors:
-% 2016A7PS0105P - Rohit Rajhans
-% 2016A7PS0127P - Siddhant Khandelwal
+% 2017A7PS0105P - Rohit Milind Rajhans
+% 2017A7PS0127P - Siddhant Khandelwal
 % Sample Input - packet('adapter A, ether vid 2 proto 30, ip src 192.168.1.0 dest 192.168.1.7, tcp src 12 dest 23, icmp type 20 code 30').
 
 % [Prolog Program]
@@ -19,7 +19,7 @@
 % packet/1
 % Base Predicate 
 % Accepts packet and associated data
-% Splits the arguements and passes on to check_packet/2
+% Splits the arguements and passes on to check_packet/5
 packet(I) :-
     split_string(I, ",", "", [A|[B|[C|[D|[E|_]]]]]),
     split_string(A, " ", "\s\t\n", [_|[P]]),
@@ -42,11 +42,11 @@ packet(I) :-
 % Prints the result for the packet after validation
 check_packet(X,Y,Z,W,U) :-
     is_packet_accepted(X,Y,Z,W,U),
-    write('Packet accepted').
+    write('Packet allowed').
 
 check_packet(X,Y,Z,W,U) :-
     is_packet_dropped(X,Y,Z,W,U),
-    write('Packet dropped').
+    true.
 
 check_packet(X,Y,Z,W,U) :-
     is_packet_rejected(X,Y,Z,W,U),

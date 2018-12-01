@@ -6,6 +6,7 @@
 %% YET TO BE DONE: 1.Implement any
 %% 2. documentation
 %% 3. fill up db, and arrange and name code properly (efficient code, consistent naming and spacing)
+%% 4. add n.n.n.n/<prefix>
 
 packet(I) :-
     split_string(I, ",", "", [A|[B|[C|[D|[E|_]]]]]),
@@ -59,20 +60,20 @@ is_packet_rejected(X,Y,Z,W,U) :-
     validate_icmp(U,P).
 
 validate_adapter(X,L) :-
-    X='',
+    X='any',
     validate_adapter('Z',L).
 validate_adapter(X,L) :-
-    \+X='',
+    \+X='any',
     sub_string(L,_,_,_,'-'),
     split_string(L,"-","",T),
     memberOfRange(X,T).
 validate_adapter(X,L) :-
-    \+X='',
+    \+X='any',
     sub_string(L,_,_,_,','),
     split_string(L,",","",T),
     memberOfList(X,T).
 validate_adapter(X,L) :-
-    \+X='',
+    \+X='any',
     \+sub_string(L,_,_,_,'-'),
     \+sub_string(L,_,_,_,','),
     char_code(X,XC),

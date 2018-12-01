@@ -11,12 +11,9 @@
 % Sample Input - packet('adapter A, ether vid 2 proto 30, ip src 192.168.1.0 dest 192.168.1.0, tcp src 12 dest 23, icmp type 20 code 30').
 
 % TODO
-% complete all the following, i'm done
-% YET TO BE DONE: 
-% 1.Implement any
+% 1. Implement any
 % 2. documentation
-% 3. fill up db, and arrange and name code properly (efficient code, consistent naming and spacing)
-% 4. add n.n.n.n/<prefix>
+% 3. add n.n.n.n/<prefix>
 
 % [Prolog Program]
 % Importing Databse stored as 'db.pl' in cwd
@@ -242,6 +239,18 @@ verify_ip([S|[D|_]], [VS|[VD|_]]) :-
 verify_ip_add(Z,N) :-
     \+sub_string(N, _, _, _, ','),
     \+sub_string(N, _, _, _, '-'),
+    Z=N.
+
+% verify_ip_add/2
+% Checks for type of arguement passed by rule in database
+% verifies single ip address with netmask
+verify_ip_add(Z,N) :-
+    sub_string(N, _, _, _, '/'),
+    \+sub_string(N, _, _, _, ','),
+    \+sub_string(N, _, _, _, '-'),
+    split_string(N, '/', '', [_|T]),
+    T >= 1,
+    T =< 32,
     Z=N.
 
 % verify_ip_add/2

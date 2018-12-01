@@ -20,10 +20,8 @@ packet(I) :-
     atom_number(W,WN),
     atom_number(X,XN),
     atom_number(Y,YN),
-    atom_string(S,SA),
-    atom_string(T, TA),  
     atom_string(UA, U),
-    check_packet(P, [QN|[RN]], [SA|[TA]], [UA|[VN|[WN]]] ,[XN|[YN]]).
+    check_packet(P, [QN|[RN]], [S|[T]], [UA|[VN|[WN]]] ,[XN|[YN]]).
 
 check_packet(X,Y,Z,W,U) :-
     is_packet_accepted(X,Y,Z,W,U),

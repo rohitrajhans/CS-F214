@@ -2,14 +2,14 @@
 
 - Problem 1:
 
-  i) Firewall rules are encoded in Prolog as facts and rules: each rule may start with accept (allow the incoming packet), 
+1.  Firewall rules are encoded in Prolog as facts and rules: each rule may start with accept (allow the incoming packet), 
        reject (send reject information to sender), or drop (silently) followed by a clause.
-  ii) Write a Prolog program to apply encoded rules on any incoming packet. Note that multiple rules may apply.
+2.  Write a Prolog program to apply encoded rules on any incoming packet. Note that multiple rules may apply.
 
 ## Authors
 
-2016A7PS0105P - Rohit Rajhans
-2016A7PS0127P - Siddhant Khandelwal
+- 2017A7PS0105P - Rohit Rajhans
+- 2017A7PS0127P - Siddhant Khandelwal
 
 ## Input Constraints
 

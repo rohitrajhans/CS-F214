@@ -29,11 +29,19 @@ check_packet(X,Y,Z,W,U) :-
     write('Packet accepted').
 
 check_packet(X,Y,Z,W,U) :-
-    is_packet_dropped(X,Y,Z,W,U).
+    is_packet_dropped(X,Y,Z,W,U),
+    write('Packet dropped').
 
 check_packet(X,Y,Z,W,U) :-
     is_packet_rejected(X,Y,Z,W,U),
     write('Packet rejected').
+
+check_packet(X,Y,Z,W,U) :-
+    \+is_packet_accepted(X,Y,Z,W,U),
+    \+is_packet_rejected(X,Y,Z,W,U),
+    \+is_packet_dropped(X,Y,Z,W,U),
+    write('Packet does not match any clause, rejected by default'),
+    false.
 
 is_packet_accepted(X,Y,Z,W,U) :-
     allow(L,M,N,O,P),

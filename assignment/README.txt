@@ -35,7 +35,7 @@ Implementation:
 
 
 - Output
-  - After validation of input parameters, a message 'packet allowed' is printed and 'true' value is returned.
+  - After validation of input parameters, a message 'packet allowed' is printed and 'true' value is returned if the allow clause is satisfied.
   - In case of reject, a message 'packet rejected' is printed and 'true' value is returned.
   - In case of drop, no message is printed and 'true' value is returned.
   - In case input parameters do not match with existing database rules, a message 'packet rejected' is printed and 'false' value is returned.

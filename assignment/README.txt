@@ -1,5 +1,4 @@
-
-CS-F214 Assignment III 2018-19
+CS-F214 Assignment 2018-19
 Take-Home [Prolog]
 
 - Problem 1:

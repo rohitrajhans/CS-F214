@@ -27,6 +27,14 @@ Input Constraints:
   - ICMP: 'icmp type 10 code 5'
     icmp ICMP-type-condition ICMP-code-condition
 
+Output: 
+  - After verification of Input Parameters: 
+    - In case of allow, 'Packet Allowed' is printed and 'true' value is returned.
+    - In case of reject, 'Packet Rejected' is printed and 'true' value is returned.
+    - In case of drop, no message is printed and 'true' value is returned.
+    - In case input parameters do not match with existing database rules, 
+      'Packet does not match any clause, rejected by default' is printed and 'false' value is returned.
+
 Implementation:
   - The 'packet' rule accepts packet data as a string, parses it and verifies it with the existing database. [see db.pl]
   - Incoming packet information is matched with each rule and accordingly the result is displayed.
@@ -45,10 +53,72 @@ Implementation:
     - Values within rule specified by "any" are don't care conditions. 
     - The verification of clause is skipped in presence of "any".
 
-- Output
-  - After verification of Input Parameters: 
-    - In case of allow, 'Packet Allowed' is printed and 'true' value is returned.
-    - In case of reject, 'Packet Rejected' is printed and 'true' value is returned.
-    - In case of drop, no message is printed and 'true' value is returned.
-    - In case input parameters do not match with existing database rules, 
-      'Packet does not match any clause, rejected by default' is printed and 'false' value is returned.
+    - Predicates
+      -  packet/1
+         Base Predicate 
+         Accepts packet and associated data
+         Splits the arguements and passes on to check_packet/5
+      -  check_packet/5
+         Recieves packet attributes from packet/1.
+         Passes on to is_packet_accepted/5, is_packet_dropped/5, is_packet_rejected/5
+         Prints the result for the packet after validation
+      -  is_packet_accepted/5
+         Recieves packet attributes from check_packet/5
+         Recieves allow/5 rules from the database
+         Passes on the corresponding attributes from both the rule and the packet to respective predicates for evaluation
+      -  is_packet_dropped/5
+         Recieves packet attributes from check_packet/5
+         Recieves drop/5 rules from the database
+         Passes on the corresponding attributes from both the rule and the packet to respective predicates for evaluation
+      -  is_packet_rejected/5
+         Recieves packet attributes from check_packet/5
+         Recieves reject/5 rules from the database
+         Passes on the corresponding attributes from both the rule and the packet to respective predicates for evaluation
+      -  verify_adapter/2
+         verfies the adapter
+      -  verify_ethernet/2
+         Recieves the proto and vid attribute for ethernet
+         Passes the attributes to respective predicates - verify_vid/2, verify_proto/2
+      -  verify_vid/2
+         verifies vid
+      -  verify_proto/2
+         verifies proto
+      -  verify_icmp/2
+         Recieves the icmp type and code
+         Passes the attributes to respective predicates - verify_type/2, verify_code/2
+      -  verify_type/2
+         verifies type
+      -  verify_code/2
+         verifies code
+      -  verify_ip/2
+         Recieves the Source and Destination IP Address
+         Passes the attributes to predicate - verify_ip_add/2
+      -  verify_ip_add/2
+         verifies IP Address
+      -  verify_tcp_udp/2
+         Checks for tcp attributes
+         Verfies ports for Source and Destination tcp - verify_ports/2
+      -  verify_ports/2
+         verfies ports
+      
+      - Helper Predicates
+        -  verify_number_range/2
+           verifies whether A is in range B
+        -  verify_number_list/2
+           verifies whether A is in list B
+        -  verify_number_range/2
+           verifies equality of A and B
+        -  memberIPList/2
+           Verifies IP Address in List from rule using recursion
+        -  memberIPRange/2
+           Verifies IP Address in Range from rule
+        -  compare_range/2
+           Verifies equality of IP Address in range using recursion
+        -  memberOfList/2
+           Verifies in list using recursion
+        -  memberOfRange/2
+           converts to character code and checks in range
+        -  memberOfNumberRange/2
+           converts to character code and checks in range for numbers
+        -  memberOfNumberList/2
+           Verifies in number list using recursion

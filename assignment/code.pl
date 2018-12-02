@@ -75,7 +75,7 @@ is_packet_accepted(X,Y,Z,W,U) :-
     verify_tcp_udp(W,O),
     verify_icmp(U,P).
 
-% is_packet_accepted/5
+% is_packet_dropped/5
 % Recieves packet attributes from check_packet/5
 % Recieves drop/5 rules from the database
 % Passes on the corresponding attributes from both the rule and the packet to respective predicates for evaluation
@@ -87,7 +87,7 @@ is_packet_dropped(X,Y,Z,W,U) :-
     verify_tcp_udp(W,O),
     verify_icmp(U,P).
 
-% is_packet_accepted/5
+% is_packet_rejected/5
 % Recieves packet attributes from check_packet/5
 % Recieves reject/5 rules from the database
 % Passes on the corresponding attributes from both the rule and the packet to respective predicates for evaluation
@@ -150,6 +150,7 @@ verify_ethernet([V|[P|_]],M) :-
 verify_vid(_, [E|_]) :-
     E = "any".
 
+% verify_vid/2
 % verifies number range for vid
 verify_vid(Y,[E|_]) :-
     verify_number_range(Y,E).
@@ -215,7 +216,7 @@ verify_type(T,[I|_]) :-
     verify_number(T,I).
 
 % verify_code/2
-% verifies 'any' case for type
+% verifies 'any' case for code
 verify_code(I,[_|[I|_]]) :-
     I = "any".
 
@@ -247,6 +248,7 @@ verify_ip([S|[D|_]], [VS|[VD|_]]) :-
 verify_ip_add(_,N) :-
     N = "any".
 
+% verify_ip_add/2
 % Checks for type of arguement passed by rule in database
 % verifies single ip address
 verify_ip_add(Z,N) :-
@@ -304,6 +306,7 @@ verify_tcp_udp([W|[S|[D|_]]], [H|[VS|[VD|_]]]) :-
 verify_ports(_, B) :-
     B = "any".
 
+% verify_ports/2
 % verifies port in number range
 verify_ports(A, B) :-
     A=<65535,
@@ -323,7 +326,7 @@ verify_ports(A,B) :-
 % [[[End of Packet TCP Source, Destination Verification]]]
 % [[End of Packet Attributes Verification]]
 
-% [[Helper Functions]]
+% [[Helper Predicates]]
 
 % verify_number_range/2
 % verifies whether A is in range B
@@ -339,7 +342,7 @@ verify_number_list(A,B) :-
     split_string(B, ",", "", T),
     memberOfNumberList(A,T).
 
-% verify_number_range/2
+% verify_number/2
 % verifies equality of A and B
 verify_number(A,B) :-
     \+sub_string(B, _, _, _, '-'),
@@ -360,7 +363,7 @@ memberIPList(X, [H|T]) :-
     SH = SX;
     memberIPList(X, T).
 
-% memberIPList/2
+% memberIPRange/2
 % Verifies IP Address in Range from rule
 memberIPRange(X, [S, E]) :-
     split_string(X, ".", "", SX),
@@ -422,6 +425,6 @@ memberOfNumberList(X, [H|T]) :-
     atom_number(H, HE),
     X = HE;
     memberOfNumberList(X, T).
-% [[End of Helper Functions]]
+% [[End of Helper Predicates]]
 
 % [End of Prolog Program]
